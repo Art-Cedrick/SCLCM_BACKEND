@@ -39,14 +39,14 @@ class RegisterView(APIView):
             # Extract data from request
             username = request.data.get('username')
             password = request.data.get('password')
-            role = request.data.get('role')  # Role ('Counselor', 'Psychometrician', 'Student')
+            role = request.data.get('role').lower() # Role ('Counselor', 'Psychometrician', 'Student')
 
             # Log the role received from frontend for debugging
             print(f"Backend received role: {role}")  # Ensure this prints the correct role
 
             # Validate role (case insensitive check)
             valid_roles = ['counselor', 'psychometrician', 'student']
-            if role.lower() not in valid_roles:
+            if role not in valid_roles:
                 return Response({'message': 'Invalid role specified'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Check if the user already exists
@@ -62,8 +62,7 @@ class RegisterView(APIView):
                 user = serializer.save()
 
                 # Create profile and assign the role directly here
-                print(f"Creating profile with role: {role.lower()}")
-                Profile.objects.create(user=user, role=role.lower())  # Role should be saved in lowercase
+                Profile.objects.create(user=user, role=role)  # Role should be saved in lowercase
 
                 return Response({
                     'message': 'User created successfully',
