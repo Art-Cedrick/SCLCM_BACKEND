@@ -48,6 +48,10 @@ urlpatterns = [
     path('api/students/', StudentListView.as_view(), name='student-list'),
     path('api/search-student/', search_student, name='search_student'),
     path('api/upload/', FileUploadView.as_view(), name='file-upload'),
+    path('api/storage/upload/', StorageView.as_view(), name='storage-file-upload'),
+    path('api/storage/files/', ListFilesView.as_view(), name='storage-list-files'),
+    path('api/storage/download/<str:filename>/', DownloadFileView.as_view(), name='storage-download-file'),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),   
 ]
 
 

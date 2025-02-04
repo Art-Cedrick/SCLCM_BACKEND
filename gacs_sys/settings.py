@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-k9u(4wq5h_tnu1xrq1q01q@gz!(ji65d3niz7)jr$266p1g%)v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -43,8 +43,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'django_ckeditor_5',
-    'ckeditor',
-    'ckeditor_uploader',
 ]
 
 REST_FRAMEWORK = {
@@ -151,15 +149,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-
-STATIC_URL = 'static/'
-if DEBUG:
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static')
-    ]
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
@@ -223,10 +212,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Static files settings
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS is only for development, remove it in production
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Ensure this directory exists
-] if os.getenv('DJANGO_DEBUG', 'True') == 'True' else []
+    os.path.join(BASE_DIR, "static"),
+]
 
 # STATIC_ROOT is where `collectstatic` will gather all static files in production
 STATIC_ROOT = BASE_DIR / "staticfiles"

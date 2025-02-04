@@ -1,7 +1,7 @@
 from email.utils import parsedate
 from venv import logger
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.views import View
 from rest_framework import viewsets, permissions
 from .models import *
@@ -21,6 +21,8 @@ from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from datetime import datetime
+from django.conf import settings
+from pathlib import Path
 import os
 
 # Create your views here.
@@ -603,3 +605,52 @@ class FileUploadView(View):
         file_url = fs.url(filename)
 
         return JsonResponse({'url': file_url})
+    
+    
+class StorageView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        allowed_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png']
+
+        file = request.FILES.get('file')
+
+        if not file or not request.FILES:
+            return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+        fs = FileSystemStorage()
+        file_name = file.name.replace(' ', '_')
+
+        file_extension = Path(file_name).suffix
+
+        if file_extension not in allowed_extensions:
+            return JsonResponse({'error': 'Unsupported file type'}, status=400)
+
+        try:
+            fs.save(file_name, file)
+        except Exception as e:
+            print('Error occurred', e)
+            return JsonResponse({'success': False})
+
+        return JsonResponse({'success': True})
+
+
+class ListFilesView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+
+        files = os.listdir(settings.MEDIA_ROOT)
+        file_urls = [f"{settings.MEDIA_URL}{file}" for file in files]
+
+        return Response({'files': file_urls})
+    
+class DownloadFileView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, filename):
+
+        try:
+            file_path = os.path.join(settings.MEDIA_ROOT, filename)
+            return FileResponse(open(file_path, 'rb'), as_attachment=True)
+        except FileNotFoundError as e:
+            print('Error: ', e)
+            return JsonResponse({'error' : 'File not found.'})
