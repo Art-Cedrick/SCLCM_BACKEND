@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from ckeditor_uploader.fields import RichTextUploadingField
+from django_ckeditor_5.fields import CKEditor5Field
 from datetime import time
 
 # Create your models here.
@@ -544,7 +544,7 @@ class Fourth_Year(models.Model):
 
 class Resource(models.Model):
     title = models.CharField(max_length=200)
-    content = RichTextUploadingField(blank=True, null=True)
+    content = CKEditor5Field("Content", config_name="default")
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(get_user_model(), related_name='resource', on_delete=models.CASCADE, default=1)
@@ -572,7 +572,9 @@ class Appointment(models.Model):
     start = models.CharField(max_length=50, blank=True, null=True)
     end = models.CharField(max_length=50, blank=True, null=True)
     time = models.TimeField(default=time(9, 0))
-    purpose = models.CharField(max_length=50, choices=PURPOSE_CHOICES)
+    time_in_date = models.DateTimeField(blank=True, null=True)
+    time_out_date = models.DateTimeField(blank=True, null=True)
+    purpose = models.CharField(max_length=50)
     title = models.CharField(max_length=255, blank=True, null=True)
     other_purpose = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,7 +1,7 @@
 from email.utils import parsedate
 from venv import logger
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.views import View
 from rest_framework import viewsets, permissions
 from .models import *
@@ -21,6 +21,8 @@ from django.core.files.storage import default_storage
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from datetime import datetime
+from django.conf import settings
+from pathlib import Path
 import os
 
 # Create your views here.
@@ -37,14 +39,14 @@ class RegisterView(APIView):
             # Extract data from request
             username = request.data.get('username')
             password = request.data.get('password')
-            role = request.data.get('role')  # Role ('Counselor', 'Psychometrician', 'Student')
+            role = request.data.get('role').lower() # Role ('Counselor', 'Psychometrician', 'Student')
 
             # Log the role received from frontend for debugging
             print(f"Backend received role: {role}")  # Ensure this prints the correct role
 
             # Validate role (case insensitive check)
             valid_roles = ['counselor', 'psychometrician', 'student']
-            if role.lower() not in valid_roles:
+            if role not in valid_roles:
                 return Response({'message': 'Invalid role specified'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Check if the user already exists
@@ -60,8 +62,7 @@ class RegisterView(APIView):
                 user = serializer.save()
 
                 # Create profile and assign the role directly here
-                print(f"Creating profile with role: {role.lower()}")
-                Profile.objects.create(user=user, role=role.lower())  # Role should be saved in lowercase
+                Profile.objects.create(user=user, role=role)  # Role should be saved in lowercase
 
                 return Response({
                     'message': 'User created successfully',
@@ -603,3 +604,92 @@ class FileUploadView(View):
         file_url = fs.url(filename)
 
         return JsonResponse({'url': file_url})
+    
+    
+class StorageView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        allowed_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png']
+
+        file = request.FILES.get('file')
+
+        if not file or not request.FILES:
+            return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+        fs = FileSystemStorage()
+        file_name = file.name.replace(' ', '_')
+
+        file_extension = Path(file_name).suffix
+
+        if file_extension not in allowed_extensions:
+            return JsonResponse({'error': 'Unsupported file type'}, status=400)
+
+        try:
+            fs.save(file_name, file)
+        except Exception as e:
+            print('Error occurred', e)
+            return JsonResponse({'success': False})
+
+        return JsonResponse({'success': True})
+
+
+class ListFilesView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+
+        files = os.listdir(settings.MEDIA_ROOT)
+        file_urls = [f"{settings.MEDIA_URL}{file}" for file in files]
+
+        return Response({'files': file_urls})
+    
+class DownloadFileView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, filename):
+
+        try:
+            file_path = os.path.join(settings.MEDIA_ROOT, filename)
+            return FileResponse(open(file_path, 'rb'), as_attachment=True)
+        except FileNotFoundError as e:
+            print('Error: ', e)
+            return JsonResponse({'error' : 'File not found.'})
+        
+class CounselorAppointmentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def check_counselor(self, request):
+        if request.user.profile.role != 'counselor':
+            return Response({"error": "Not authorized to perform this action"}, 
+                          status=status.HTTP_403_FORBIDDEN)
+
+    def post(self, request):
+        self.check_counselor(request)
+        copy_data = request.data.copy()
+        copy_data['counselor'] = request.user.profile.id
+        
+
+        serializer = CounselorAppointmentSerializer(data=copy_data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, pk=None):
+        self.check_counselor(request)
+        if pk:
+            appointment = get_object_or_404(Appointment, pk=pk)
+            serializer = CounselorAppointmentSerializer(appointment)
+            return Response(serializer.data)
+        
+        appointments = Appointment.objects.filter(counselor=request.user.profile)
+        serializer = CounselorAppointmentSerializer(appointments, many=True)
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        self.check_counselor(request)
+        appointment = get_object_or_404(Appointment, pk=pk)
+        if appointment.counselor.user != request.user:
+            return Response({"error": "Not authorized to delete this appointment"}, 
+                          status=status.HTTP_403_FORBIDDEN)
+        appointment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

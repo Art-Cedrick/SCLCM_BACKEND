@@ -171,4 +171,46 @@ class AppointmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Invalid counselor reference.")
         
         return data
+
+class CounselorAppointmentSerializer(serializers.ModelSerializer):
+    time_in_date = serializers.DateTimeField(write_only=True)
+    time_out_date = serializers.DateTimeField(write_only=True)
+    grade = serializers.CharField(max_length=50)
+    name = serializers.CharField(max_length=255)
+    purpose = serializers.CharField(max_length=500)
+    section = serializers.CharField(max_length=50)
+    sr_code = serializers.SlugRelatedField(
+        queryset=IndividualRecordForm.objects.all(),
+        slug_field='sr_code'
+    )
+
+    
+    class Meta:
+        model = Appointment
+        fields = [
+            'grade',
+            'name',
+            'purpose',
+            'section',
+            'sr_code',
+            'time_in_date',
+            'time_out_date',
+        ]
+
+    def validate(self, data):
+        if data['time_in_date'] >= data['time_out_date']:
+            raise serializers.ValidationError("End time must be after start time")
+        return data
+
+    def create(self, validated_data):
+        time_in_date = validated_data.get('time_in_date')
+        time_out_date = validated_data.get('time_out_date')
         
+        # Still populate these fields even though they're not in the serializer
+        validated_data['date'] = time_in_date.date()
+        validated_data['start'] = time_in_date.strftime('%H:%M')
+        validated_data['end'] = time_out_date.strftime('%H:%M')
+        validated_data['time'] = time_in_date.time()
+        
+        return Appointment.objects.create(**validated_data)
+    
