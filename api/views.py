@@ -664,11 +664,12 @@ class CounselorAppointmentView(APIView):
 
     def post(self, request):
         self.check_counselor(request)
-        request.data['counselor'] = request.user.profile.id
+        copy_data = request.data.copy()
+        copy_data['counselor'] = request.user.profile.id
         
-        serializer = CounselorAppointmentSerializer(data=request.data)
-        if serializer.is_valid():
 
+        serializer = CounselorAppointmentSerializer(data=copy_data)
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
