@@ -653,3 +653,42 @@ class DownloadFileView(APIView):
         except FileNotFoundError as e:
             print('Error: ', e)
             return JsonResponse({'error' : 'File not found.'})
+        
+class CounselorAppointmentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def check_counselor(self, request):
+        if request.user.profile.role != 'counselor':
+            return Response({"error": "Not authorized to perform this action"}, 
+                          status=status.HTTP_403_FORBIDDEN)
+
+    def post(self, request):
+        self.check_counselor(request)
+        request.data['counselor'] = request.user.profile.id
+        
+        serializer = CounselorAppointmentSerializer(data=request.data)
+        if serializer.is_valid():
+
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, pk=None):
+        self.check_counselor(request)
+        if pk:
+            appointment = get_object_or_404(Appointment, pk=pk)
+            serializer = CounselorAppointmentSerializer(appointment)
+            return Response(serializer.data)
+        
+        appointments = Appointment.objects.filter(counselor=request.user.profile)
+        serializer = CounselorAppointmentSerializer(appointments, many=True)
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        self.check_counselor(request)
+        appointment = get_object_or_404(Appointment, pk=pk)
+        if appointment.counselor.user != request.user:
+            return Response({"error": "Not authorized to delete this appointment"}, 
+                          status=status.HTTP_403_FORBIDDEN)
+        appointment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
