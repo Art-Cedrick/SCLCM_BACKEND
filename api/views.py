@@ -690,8 +690,11 @@ class CounselorAppointmentView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, pk):
+        copy_data = request.data.copy()
+        copy_data['counselor'] = request.user.profile.id
+
         appointment = Appointment.objects.get(pk=pk)
-        serializer = CounselorAppointmentSerializer(appointment, data=request.data, partial=True)
+        serializer = CounselorAppointmentSerializer(appointment, data=copy_data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
