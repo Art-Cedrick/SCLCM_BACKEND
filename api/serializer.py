@@ -195,6 +195,7 @@ class CounselorAppointmentSerializer(serializers.ModelSerializer):
             'sr_code',
             'time_in_date',
             'time_out_date',
+            'counselor'
         ]
 
     def validate(self, data):
