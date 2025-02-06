@@ -689,8 +689,13 @@ class CounselorAppointmentView(APIView):
     def delete(self, request, pk):
         self.check_counselor(request)
         appointment = get_object_or_404(Appointment, pk=pk)
-        if appointment.counselor.user != request.user:
-            return Response({"error": "Not authorized to delete this appointment"}, 
-                          status=status.HTTP_403_FORBIDDEN)
         appointment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ListCounselorAppointmentsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        appointments = Appointment.objects.all()
+        serializer = AppointmentSerializer(appointments, many=True)
+        return Response(serializer.data)

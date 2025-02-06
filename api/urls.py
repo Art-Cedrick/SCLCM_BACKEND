@@ -53,6 +53,7 @@ urlpatterns = [
     path('api/storage/download/<str:filename>/', DownloadFileView.as_view(), name='storage-download-file'),
     path('api/counselor/appointment/', CounselorAppointmentView.as_view(), name='counselor-appointment'),
     path('api/counselor/appointment/<int:pk>/', CounselorAppointmentView.as_view(), name='counselor-appointment-detail'),
+    path('api/list-counselor/appointment/', ListCounselorAppointmentsView.as_view(), name='list-appointment-detail'),
 
     path("ckeditor5/", include("django_ckeditor_5.urls")),   
 ]
