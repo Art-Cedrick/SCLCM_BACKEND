@@ -687,7 +687,7 @@ class CounselorAppointmentView(APIView):
         self.check_counselor(request)
         appointment = get_object_or_404(Appointment, pk=pk)
         appointment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'data': True})
 
     def patch(self, request, pk):
         copy_data = request.data.copy()
@@ -709,6 +709,6 @@ class ListCounselorAppointmentsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        appointments = Appointment.objects.all()
+        appointments = Appointment.objects.all().order_by('-created_at')
         serializer = AppointmentSerializer(appointments, many=True)
-        return Response(serializer.data)
+        return Response({'data': serializer.data})
