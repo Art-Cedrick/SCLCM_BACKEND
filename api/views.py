@@ -24,6 +24,7 @@ from datetime import datetime
 from django.conf import settings
 from pathlib import Path
 import os
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 class StudentListView(APIView):
@@ -608,13 +609,13 @@ class FileUploadView(View):
     
 class StorageView(APIView):
     #permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
         allowed_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png']
+        file = request.FILES.get('upload')
 
-        file = request.FILES.get('file')
-
-        if not file or not request.FILES:
+        if not file:
             return JsonResponse({'error': 'No file uploaded'}, status=400)
 
         fs = FileSystemStorage()
