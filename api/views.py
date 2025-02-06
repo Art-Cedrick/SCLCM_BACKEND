@@ -677,21 +677,31 @@ class CounselorAppointmentView(APIView):
     
     def get(self, request, pk=None):
         self.check_counselor(request)
-        if pk:
-            appointment = get_object_or_404(Appointment, pk=pk)
-            serializer = CounselorAppointmentSerializer(appointment)
-            return Response(serializer.data)
-        
-        appointments = Appointment.objects.filter(counselor=request.user.profile)
-        serializer = CounselorAppointmentSerializer(appointments, many=True)
+
+        appointment = Appointment.objects.get(pk=pk)
+
+        serializer = CounselorAppointmentSerializer(appointment)
         return Response(serializer.data)
-    
+        
     def delete(self, request, pk):
         self.check_counselor(request)
         appointment = get_object_or_404(Appointment, pk=pk)
         appointment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def patch(self, request, pk):
+        appointment = Appointment.objects.get(pk=pk)
+        serializer = CounselorAppointmentSerializer(appointment, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'data': serializer.data})
+        else:
+            return Response({'errors': serializer.errors})
+
+
+
+           
 class ListCounselorAppointmentsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 

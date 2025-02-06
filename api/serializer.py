@@ -173,8 +173,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
         return data
 
 class CounselorAppointmentSerializer(serializers.ModelSerializer):
-    time_in_date = serializers.DateTimeField(write_only=True)
-    time_out_date = serializers.DateTimeField(write_only=True)
+    time_in_date = serializers.DateTimeField()
+    time_out_date = serializers.DateTimeField()
     grade = serializers.CharField(max_length=50)
     name = serializers.CharField(max_length=255)
     purpose = serializers.CharField(max_length=500)
@@ -195,13 +195,24 @@ class CounselorAppointmentSerializer(serializers.ModelSerializer):
             'sr_code',
             'time_in_date',
             'time_out_date',
+            'start',
+            'end',
+            'date',
+            'time',
             'counselor'
         ]
 
     def validate(self, data):
-        if data['time_in_date'] >= data['time_out_date']:
+        time_in_date = data.get('time_in_date')
+        time_out_date = data.get('time_out_date')
+
+        if time_in_date is None or time_out_date is None:
+            return data
+
+        if time_in_date >= time_out_date:
             raise serializers.ValidationError("End time must be after start time")
         return data
+
 
     def create(self, validated_data):
         time_in_date = validated_data.get('time_in_date')
@@ -214,4 +225,6 @@ class CounselorAppointmentSerializer(serializers.ModelSerializer):
         validated_data['time'] = time_in_date.time()
         
         return Appointment.objects.create(**validated_data)
-    
+
+
+
