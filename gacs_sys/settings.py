@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import dj_database_url
 import os
 from pathlib import Path
 
@@ -93,12 +94,16 @@ WSGI_APPLICATION = 'gacs_sys.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#        'CONN_MAX_AGE': 0,
+#    }
+#}
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'CONN_MAX_AGE': 0,
-    }
+    'default': dj_database_url.parse('postgresql://sclcm_db_user:A5XUn1K6lEiq7sftRrggbh86j6lrt8PD@dpg-cui0vttds78s73drnr6g-a.singapore-postgres.render.com/sclcm_db')
 }
 
 # settings.py
