@@ -2,8 +2,11 @@ __pycache__/
 *.py[cod]
 
 api/migrations/__pycache__/
+api/__pycache__/
+gacs_sys/__pycache__/
 
 .env
+.venv
 
 *.sqlite3
 db.sqlite3
