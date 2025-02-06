@@ -102,7 +102,7 @@ WSGI_APPLICATION = 'gacs_sys.wsgi.application'
 #}
 
 DATABASES = {
-    'default': dj_database_url.parse('postgresql://sclcm_db_user:A5XUn1K6lEiq7sftRrggbh86j6lrt8PD@dpg-cui0vttds78s73drnr6g-a.singapore-postgres.render.com/sclcm_db')
+    'default': dj_database_url.parse('postgresql://sclcm_db_qid1_user:CKkNHM2aUNQcFdmYk2FV6tON9h7xvpT9@dpg-cui1n6lds78s73drua9g-a.singapore-postgres.render.com/sclcm_db_qid1')
 }
 
 
