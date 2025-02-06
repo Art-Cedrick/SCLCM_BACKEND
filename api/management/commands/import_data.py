@@ -6,7 +6,12 @@ class Command(BaseCommand):
     help = 'Import dataset into CareerTracking model'
 
     def handle(self, *args, **kwargs):
-        file_path = r'C:\Users\ACER\Documents\GitHub\SCLCM_BACKEND\api\management\commands\data\CAREER-TRACKING.csv'  # Adjust the file path
+        #file_path = r'C:\Users\ACER\Documents\GitHub\SCLCM_BACKEND\api\management\commands\data\CAREER-TRACKING.csv'  # Adjust the file path
+        #file_path = '/root/SCLCM_BACKEND/api/management/commands/data/INDIVIDUAL-RECORD-FORM.csv'
+
+        #file_path = '/root/SCLCM_BACKEND/api/management/commands/data/ACCOUNTS.csv'
+
+        file_path = '/root/SCLCM_BACKEND/api/management/commands/data/CAREER-TRACKING.csv'
 
         try:
             with open(file_path, 'r', newline='', encoding='utf-8') as file:
