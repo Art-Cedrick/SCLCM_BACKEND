@@ -615,9 +615,6 @@ class StorageView(APIView):
         allowed_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png']
         file = request.FILES.get('upload')
 
-        if not file:
-            return JsonResponse({'error': 'No file uploaded'}, status=400)
-
         fs = FileSystemStorage()
         file_name = file.name.replace(' ', '_')
 
