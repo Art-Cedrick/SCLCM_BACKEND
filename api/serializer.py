@@ -3,16 +3,17 @@ from .models import *
 from django.contrib.auth.models import User
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(max_length=50, required=False)
+    first_name = serializers.CharField(max_length=255, required=False)
+    last_name = serializers.CharField(max_length=255, required=False)
+    middle_name = serializers.CharField(max_length=255, required=False)
+    phone_number = serializers.CharField(max_length=255, required=False)
+    address = serializers.CharField(max_length=255, required=False)
+
+    
     class Meta:
         model = User
-        fields = ['username', 'password']
-
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User.objects.create_user(**validated_data)  # create_user hashes the password automatically
-        user.set_password(password)
-        user.save()
-        return user
+        fields = ['username', 'password', 'role', 'id', 'first_name', 'last_name', 'middle_name', 'phone_number', 'address']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

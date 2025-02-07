@@ -165,7 +165,7 @@ class MS_ImpactEvaluation(models.Model):
     satisfaction= models.JSONField(default=list)
     unsureno = models.TextField()
     activities = models.TextField()
-    recommenations = models.TextField()
+    recommendations = models.TextField()
     acquainted = models.JSONField(default=list)
     timetosee = models.JSONField(default=list)
     helpfulness = models.JSONField(default=list)

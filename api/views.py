@@ -37,13 +37,14 @@ class StudentListView(APIView):
 class RegisterView(APIView):
     def post(self, request):
         try:
-            # Extract data from request
             username = request.data.get('username')
             password = request.data.get('password')
-            role = request.data.get('role').lower() # Role ('Counselor', 'Psychometrician', 'Student')
-
-            # Log the role received from frontend for debugging
-            print(f"Backend received role: {role}")  # Ensure this prints the correct role
+            role = request.data.get('role')
+            first_name = request.data.get('first_name')
+            last_name = request.data.get('last_name')
+            middle_name = request.data.get('middle_name')
+            phone_number = request.data.get('phone_number')
+            address = request.data.get('address')
 
             # Validate role (case insensitive check)
             valid_roles = ['counselor', 'psychometrician', 'student']
@@ -54,28 +55,30 @@ class RegisterView(APIView):
             if User.objects.filter(username=username).exists():
                 return Response({'message': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Create the user
-            user_data = {'username': username, 'password': password}
-            serializer = RegistrationSerializer(data=user_data)
+            user = User.objects.create_user(username=username, password=password)
+            
+            Profile.objects.create(
+                user=user,
+                role=role.lower(),
+                first_name=first_name,
+                last_name=last_name,
+                middle_name=middle_name,
+                phone_number=phone_number,
+                address=address
+            )
 
-            if serializer.is_valid():
-                # Save user after validation
-                user = serializer.save()
-
-                # Create profile and assign the role directly here
-                Profile.objects.create(user=user, role=role)  # Role should be saved in lowercase
-
-                return Response({
-                    'message': 'User created successfully',
-                    'username': user.username,
-                    'role': role,
-                }, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'message': 'User created successfully',
+                'username': user.username,
+                'role': role,
+            }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print("Error occurred:", str(e))  # This will print any error to the console
-            return Response({'message': 'Internal Server Error', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print("Error occurred:", str(e))
+            return Response(
+                {'message': 'Internal Server Error', 'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class setPagination(PageNumberPagination):
@@ -140,12 +143,41 @@ class LoginView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
-
+        
         if user is not None:
             # User is authenticated, return token and role
             token, created = Token.objects.get_or_create(user=user)
-            user_role = user.profile.role  # Assuming you have a `role` field in a `profile` model
-            return Response({'token': token.key, 'role': user_role}, status=status.HTTP_200_OK)
+            user_profile = Profile.objects.get(user=user.id)
+            
+            if user_profile.role == 'student':
+                try:
+                    sr_record = IndividualRecordForm.objects.get(profile=user_profile.id)
+                    user_data = {
+                        'sr_code': sr_record.sr_code,
+                        'lastname': sr_record.lastname,
+                        'firstname': sr_record.firstname,
+                        'middlename': sr_record.middlename,
+                        'year': sr_record.year,
+                        'section': sr_record.section
+                    }
+                except IndividualRecordForm.DoesNotExist:
+                    user_data = {
+                        'id': user.profile.id,
+                        'first_name': user_profile.first_name,
+                        'last_name': user_profile.last_name,
+                        'middle_name': user_profile.middle_name,
+                    }
+            else:
+                user_data = {
+                    'id': user.profile.id,
+                    'first_name': user_profile.first_name,
+                    'last_name': user_profile.last_name,
+                    'middle_name': user_profile.middle_name,
+                    'phone_number': user_profile.phone_number,
+                    'address': user_profile.address,
+                    'role': user_profile.role,
+                }
+            return Response({'data': user_data, 'token': token.key}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -608,13 +640,17 @@ class FileUploadView(View):
     
     
 class StorageView(APIView):
-    #permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        allowed_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png']
-        file = request.FILES.get('upload')
-
+        allowed_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.png', '.jpg', '.jpeg']
+        
+        if 'upload' not in request.FILES:
+            return Response({
+                'error': 'No file was submitted.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        file = request.FILES['upload']
         fs = FileSystemStorage()
         file_name = file.name.replace(' ', '_')
 
@@ -625,11 +661,15 @@ class StorageView(APIView):
 
         try:
             fs.save(file_name, file)
+            return Response({
+                'success': True,
+                'filename': file_name
+            }, status=status.HTTP_201_CREATED)
         except Exception as e:
-            print('Error occurred', e)
-            return JsonResponse({'success': False})
-
-        return JsonResponse({'success': True})
+            return Response({
+                'success': False,
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ListFilesView(APIView):
@@ -698,9 +738,6 @@ class CounselorAppointmentView(APIView):
             return Response({'data': serializer.data})
         else:
             return Response({'errors': serializer.errors})
-
-
-
            
 class ListCounselorAppointmentsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
