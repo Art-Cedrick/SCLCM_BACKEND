@@ -495,9 +495,9 @@ class Friends_Problem_Analytics(APIView):
                 queryset = queryset.filter(date__range=(start_date, end_date))
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
-            
-            stats = queryset.values('friends_problem').annotate(count=Count('friends_problem'))
-            return Response(stats)
+
+        stats = queryset.values('friends_problem').annotate(count=Count('friends_problem'))
+        return Response(stats)
 
 class Health_Problem_Analytics(APIView):
     def get(self, request):
@@ -517,9 +517,9 @@ class Health_Problem_Analytics(APIView):
                 queryset = queryset.filter(date__range=(start_date, end_date))
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
-            
-            stats = queryset.values('health_problem').annotate(count=Count('health_problem'))
-            return Response(stats)
+
+        stats = queryset.values('health_problem').annotate(count=Count('health_problem'))
+        return Response(stats)
     
 class Academic_Problem_Analytics(APIView):
     def get(self, request):
@@ -539,9 +539,9 @@ class Academic_Problem_Analytics(APIView):
                 queryset = queryset.filter(date__range=(start_date, end_date))
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
-            
-            stats = queryset.values('academic_problem').annotate(count=Count('academic_problem'))
-            return Response(stats)
+
+        stats = queryset.values('academic_problem').annotate(count=Count('academic_problem'))
+        return Response(stats)
     
 class Career_Problem_Analytics(APIView):
    def get(self, request):
@@ -562,8 +562,8 @@ class Career_Problem_Analytics(APIView):
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
             
-            stats = queryset.values('career_problem').annotate(count=Count('career_problem'))
-            return Response(stats)
+        stats = queryset.values('career_problem').annotate(count=Count('career_problem'))
+        return Response(stats)
     
 class RoutineInterview_Analytics(APIView):
     def get(self, request):
