@@ -158,7 +158,8 @@ class LoginView(APIView):
                         'firstname': sr_record.firstname,
                         'middlename': sr_record.middlename,
                         'year': sr_record.year,
-                        'section': sr_record.section
+                        'section': sr_record.section,
+                        'role': user_profile.role
                     }
                 except IndividualRecordForm.DoesNotExist:
                     user_data = {
@@ -166,6 +167,7 @@ class LoginView(APIView):
                         'first_name': user_profile.first_name,
                         'last_name': user_profile.last_name,
                         'middle_name': user_profile.middle_name,
+                        'role': user_profile.role
                     }
             else:
                 user_data = {
