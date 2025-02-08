@@ -157,6 +157,7 @@ class LoginView(APIView):
                         'lastname': sr_record.lastname,
                         'firstname': sr_record.firstname,
                         'middlename': sr_record.middlename,
+                        'full_name': f"{sr_record.firstname} {sr_record.lastname}",
                         'year': sr_record.year,
                         'section': sr_record.section,
                         'role': user_profile.role
