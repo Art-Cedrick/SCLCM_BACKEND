@@ -482,6 +482,8 @@ class Family_Problem_Analytics(APIView):
         grade = request.query_params.get('grade', None)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
+        yearly = request.query_params.get('yearly', None)
+        quarterly = request.query_params.get('quarterly', None)
 
         queryset = RoutineInterview.objects.all()
 
@@ -495,15 +497,24 @@ class Family_Problem_Analytics(APIView):
                 queryset = queryset.filter(date__range=(start_date, end_date))
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+            
+        if yearly:
+            queryset = queryset.filter(date__year=yearly)
+
+        if quarterly:
+            queryset = queryset.filter(date__quarter=quarterly)
 
         stats = queryset.values('family_problem').annotate(count=Count('family_problem'))
         return Response(stats)
+
     
 class Friends_Problem_Analytics(APIView):
     def get(self, request):
         grade = request.query_params.get('grade', None)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
+        yearly = request.query_params.get('yearly', None)
+        quarterly = request.query_params.get('quarterly', None)
 
         queryset = RoutineInterview.objects.all()
 
@@ -517,6 +528,12 @@ class Friends_Problem_Analytics(APIView):
                 queryset = queryset.filter(date__range=(start_date, end_date))
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
+
+        if yearly:
+            queryset = queryset.filter(date__year=yearly)
+
+        if quarterly:
+            queryset = queryset.filter(date__quarter=quarterly)
 
         stats = queryset.values('friends_problem').annotate(count=Count('friends_problem'))
         return Response(stats)
@@ -526,6 +543,8 @@ class Health_Problem_Analytics(APIView):
         grade = request.query_params.get('grade', None)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
+        yearly = request.query_params.get('yearly', None)
+        quarterly = request.query_params.get('quarterly', None)
 
         queryset = RoutineInterview.objects.all()
 
@@ -539,6 +558,12 @@ class Health_Problem_Analytics(APIView):
                 queryset = queryset.filter(date__range=(start_date, end_date))
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
+
+        if yearly:
+            queryset = queryset.filter(date__year=yearly)
+
+        if quarterly:
+            queryset = queryset.filter(date__quarter=quarterly)
 
         stats = queryset.values('health_problem').annotate(count=Count('health_problem'))
         return Response(stats)
@@ -548,6 +573,8 @@ class Academic_Problem_Analytics(APIView):
         grade = request.query_params.get('grade', None)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
+        yearly = request.query_params.get('yearly', None)
+        quarterly = request.query_params.get('quarterly', None)
 
         queryset = RoutineInterview.objects.all()
 
@@ -562,14 +589,22 @@ class Academic_Problem_Analytics(APIView):
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
 
+        if yearly:
+            queryset = queryset.filter(date__year=yearly)
+
+        if quarterly:
+            queryset = queryset.filter(date__quarter=quarterly)
+
         stats = queryset.values('academic_problem').annotate(count=Count('academic_problem'))
         return Response(stats)
     
 class Career_Problem_Analytics(APIView):
-   def get(self, request):
+    def get(self, request):
         grade = request.query_params.get('grade', None)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
+        yearly = request.query_params.get('yearly', None)
+        quarterly = request.query_params.get('quarterly', None)
 
         queryset = RoutineInterview.objects.all()
 
@@ -584,6 +619,12 @@ class Career_Problem_Analytics(APIView):
             except ValueError:
                 return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
             
+        if yearly:
+            queryset = queryset.filter(date__year=yearly)
+
+        if quarterly:
+            queryset = queryset.filter(date__quarter=quarterly)
+
         stats = queryset.values('career_problem').annotate(count=Count('career_problem'))
         return Response(stats)
     
@@ -592,15 +633,29 @@ class RoutineInterview_Analytics(APIView):
         # Get query parameters for time filtering
         start_date = request.query_params.get("start_date")
         end_date = request.query_params.get("end_date")
+        yearly = request.query_params.get('yearly', None)
+        quarterly = request.query_params.get('quarterly', None)
+        grade = request.query_params.get('grade', None)
 
         # Base queryset
         queryset = RoutineInterview.objects.all()
-                            
-        # Apply date filtering if parameters are provided
-        if start_date:
-            queryset = queryset.filter(created_at__gte=parsedate(start_date))
-        if end_date:
-            queryset = queryset.filter(created_at__lte=parsedate(end_date))
+        
+        if grade:
+            queryset = queryset.filter(grade=grade)
+            
+        if yearly:
+            queryset = queryset.filter(date__year=yearly)
+
+        if quarterly:
+            queryset = queryset.filter(date__quarter=quarterly)
+
+        if start_date and end_date:
+            try:
+                start_date = datetime.strptime(start_date, "%Y-%m-%d")
+                end_date = datetime.strptime(end_date, "%Y-%m-%d")
+                queryset = queryset.filter(date__range=(start_date, end_date))
+            except ValueError:
+                return Response({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
 
         # Count non-null entries for each problem field
         family_problem_count = queryset.filter(family_problem__isnull=False).count()
