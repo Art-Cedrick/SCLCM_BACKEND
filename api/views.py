@@ -390,6 +390,20 @@ class ResourceViewSet(BaseViewSet):
             except Exception as e:
                 return Response({"error": f"An error occurred: {str(e)}"},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+class ResourceNewView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ResourceSerializer(data=request.data)
+        if serializer.is_valid():
+            print(request.FILES['attachment'])
+            serializer.save()
+            fs = FileSystemStorage()
+            fs.save(request.FILES['attachment'].name, request.FILES['attachment'])
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class AppointmentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -746,3 +760,13 @@ class ListCounselorAppointmentsView(APIView):
         appointments = Appointment.objects.all().order_by('-created_at')
         serializer = AppointmentSerializer(appointments, many=True)
         return Response({'data': serializer.data})
+    
+    
+class IndividualRecordFormView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        individual_record_forms = IndividualRecordForm.objects.filter(sr_code=request.user.profile.id)
+        serializer = IndividualRecordFormSerializer(data=individual_record_forms)
+        return Response({'data': serializer.data})
+        
