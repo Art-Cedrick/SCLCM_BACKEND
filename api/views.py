@@ -688,15 +688,17 @@ class StorageView(APIView):
         file_name = file.name.replace(' ', '_')
 
         file_extension = Path(file_name).suffix
+        file_path = os.path.join(settings.MEDIA_ROOT, 'resource', file_name)
 
         if file_extension not in allowed_extensions:
             return JsonResponse({'error': 'Unsupported file type'}, status=400)
 
         try:
-            fs.save(file_name, file)
+            save_path = fs.save(file_path, file)
             return Response({
                 'success': True,
-                'filename': file_name
+                'filename': file_name,
+                'save_path': save_path
             }, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({
