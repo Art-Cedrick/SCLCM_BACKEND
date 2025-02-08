@@ -404,6 +404,25 @@ class ResourceNewView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        resource = Resource.objects.all().order_by('-created')
+        serializer = ResourceSerializer(resource, many=True)
+        return Response({'data': serializer.data})
+        
+
+class GetResourceView(APIView):
+    def get(self, request, pk):
+
+        try:
+            resource = Resource.objects.get(id=pk)
+            serializer = ResourceSerializer(resource)
+            return Response(serializer.data)
+        except Resource.DoesNotExist:
+            return Response(
+                {"error": "Resource not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
         
 class AppointmentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -700,7 +719,7 @@ class DownloadFileView(APIView):
     def get(self, request, filename):
 
         try:
-            file_path = os.path.join(settings.MEDIA_ROOT, filename)
+            file_path = os.path.join(settings.MEDIA_ROOT, 'resource', filename)
             return FileResponse(open(file_path, 'rb'), as_attachment=True)
         except FileNotFoundError as e:
             print('Error: ', e)
