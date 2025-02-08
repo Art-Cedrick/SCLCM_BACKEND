@@ -769,7 +769,7 @@ class ListFilesView(APIView):
     #permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
 
-        files = os.listdir(settings.MEDIA_ROOT, 'resource')
+        files = os.listdir(os.path.join(settings.MEDIA_ROOT, 'resource'))
         file_urls = [f"{settings.MEDIA_URL}{file}" for file in files]
 
         return Response({'files': file_urls})
