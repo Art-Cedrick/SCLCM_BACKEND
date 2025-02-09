@@ -440,6 +440,7 @@ class GetResourceView(APIView):
         serializer = ResourceSerializer(resource, data=request.data, partial=True)
 
         if serializer.is_valid():
+            resource.modified = datetime.now()
             serializer.save()
             return Response(serializer.data)
         else:
