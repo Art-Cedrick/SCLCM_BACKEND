@@ -904,7 +904,10 @@ class GetRecordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        individual_record_forms = IndividualRecordForm.objects.get(profile=request.user.profile.id)
-        serializer = IndividualRecordFormSerializer(data=individual_record_forms)
-        return Response(serializer.data)
+        try:
+            record = IndividualRecordForm.objects.get(profile=request.user.profile.id)
+            serializer = IndividualRecordFormSerializer(record)
+            return Response(serializer.data)
+        except IndividualRecordForm.DoesNotExist:
+            return Response({'error': 'Individual record form not found'}, status=status.HTTP_404_NOT_FOUND)
         
