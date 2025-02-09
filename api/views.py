@@ -459,20 +459,21 @@ class GetResourceView(APIView):
             fs = FileSystemStorage()
             
             resource = Resource.objects.get(id=pk)
-            path = os.path.join(settings.MEDIA_ROOT, 'resource', resource.attachment.name)
-            
-            if os.path.exists(path):
-                fs.delete(path)
-                resource.delete()
-                
-            return Response({'data': True})
-        except Resource.DoesNotExist:
+            filename = resource.attachment.name.split('/')[-1]
+            path = os.path.join(settings.MEDIA_ROOT, 'resource')
+            files = os.listdir(path)
 
+            for file in files:
+                if file == filename:
+                    fs.delete(os.path.join(path, file))
+
+            resource.delete()
+            return Response({'data': True})
+
+        except Resource.DoesNotExist:
             return Response({'error': 'Resource not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-        
 class AppointmentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
