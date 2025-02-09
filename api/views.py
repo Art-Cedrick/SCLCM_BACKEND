@@ -428,8 +428,10 @@ class GetResourceView(APIView):
             )
 
     def patch(self, request, pk):
+        copy_data = request.data.copy()
+        copy_data['author'] = request.user.id
         resource = Resource.objects.get(id=pk)
-        serializer = ResourceSerializer(resource, data=request.data, partial=True)
+        serializer = ResourceSerializer(resource, data=copy_data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
