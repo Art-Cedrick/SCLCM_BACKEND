@@ -213,7 +213,7 @@ class RoutineInterviewViewset(BaseViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RoutineInterviewSerializer
     
-class IndividualRecordFormViewset(BaseViewSet):
+class IndividualRecordView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
