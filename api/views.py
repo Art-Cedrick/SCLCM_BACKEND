@@ -426,6 +426,24 @@ class GetResourceView(APIView):
                 {"error": "Resource not found"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+    def patch(self, request, pk):
+        resource = Resource.objects.get(id=pk)
+        serializer = ResourceSerializer(resource, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'data': serializers.data})
+        else:
+            return Response({'errors': serializers.errors})
+
+    def delete(self, request, pk):
+        resource = get_object_or_404(Resource, id=pk)
+        resource.delete()
+        return Response({'data': True})
+
+
+
         
 class AppointmentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
