@@ -227,6 +227,11 @@ class IndividualRecordView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get(self, request):
+        records = IndividualRecordForm.objects.all()
+        serializer = IndividualRecordFormSerializer(records, many=True)
+        return Response(serializer.data)
+
         
 
             
