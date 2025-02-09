@@ -900,11 +900,11 @@ class ListCounselorAppointmentsView(APIView):
         return Response({'data': serializer.data})
     
     
-class IndividualRecordFormView(APIView):
+class GetRecordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        individual_record_forms = IndividualRecordForm.objects.filter(sr_code=request.user.profile.id)
+        individual_record_forms = IndividualRecordForm.objects.get(profile=request.user.profile.id)
         serializer = IndividualRecordFormSerializer(data=individual_record_forms)
-        return Response({'data': serializer.data})
+        return Response(serializer.data)
         
