@@ -433,14 +433,17 @@ class GetResourceView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'data': serializers.data})
+            return Response(serializer.data)
         else:
-            return Response({'errors': serializers.errors})
+            return Response(serializer.errors)
 
     def delete(self, request, pk):
-        resource = get_object_or_404(Resource, id=pk)
-        resource.delete()
-        return Response({'data': True})
+        try:
+            resource = Resource.objects.get(id=pk)
+            resource.delete()
+            return Response({'data': True})
+        except Resource.DoesNotExist:
+            return Response({'error': 'Resource not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 
