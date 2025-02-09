@@ -31,7 +31,6 @@ class RoutineInterviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class IndividualRecordFormSerializer(serializers.ModelSerializer):
-    profile = serializers.StringRelatedField()
 
     class Meta:
         model = IndividualRecordForm

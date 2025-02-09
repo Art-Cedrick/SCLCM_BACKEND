@@ -1,4 +1,5 @@
 from email.utils import parsedate
+from django.db import IntegrityError
 from venv import logger
 from django.shortcuts import render
 from django.http import JsonResponse, FileResponse
@@ -213,24 +214,32 @@ class RoutineInterviewViewset(BaseViewSet):
     serializer_class = RoutineInterviewSerializer
     
 class IndividualRecordFormViewset(BaseViewSet):
-    queryset = IndividualRecordForm.objects.order_by('-sr_code')
-    serializer_class = IndividualRecordFormSerializer
     permission_classes = [permissions.AllowAny]
 
-    def create(self, request, *args, **kwargs):
-        try:
-            profile = Profile.objects.get(user=request.user)
-            serializer = self.serializer_class(data=request.data)
-            if serializer.is_valid():
-                serializer.save(profile=profile)  # Associate the profile
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Profile.DoesNotExist:
-            return Response(
-                {"error": "Profile not found for the logged-in user."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+    def post(self, request):
+        data = request.data.copy()
+        data['profile'] = request.user.profile.id
+        data['sr_code'] = request.data.get('sr_code')
+        serializer = IndividualRecordFormSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
+
+            
+class CreateIndividualRecordFormView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = IndividualRecordFormSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class CareerTrackingViewset(BaseViewSet):
     queryset = CareerTracking.objects.order_by('-id')
@@ -910,4 +919,16 @@ class GetRecordView(APIView):
             return Response(serializer.data)
         except IndividualRecordForm.DoesNotExist:
             return Response([], status=status.HTTP_200_OK)
+        
+    def post(self, request):
+        data = request.data.copy()
+        data['profile'] = request.user.profile.id
+        data['sr_code'] = request.data.get('sr_code')
+        serializer = IndividualRecordFormSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         
