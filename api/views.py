@@ -909,5 +909,5 @@ class GetRecordView(APIView):
             serializer = IndividualRecordFormSerializer(record)
             return Response(serializer.data)
         except IndividualRecordForm.DoesNotExist:
-            return Response({'error': 'Individual record form not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response([], status=status.HTTP_200_OK)
         
