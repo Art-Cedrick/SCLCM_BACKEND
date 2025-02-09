@@ -830,6 +830,7 @@ class ListFilesView(APIView):
         for file in files:
             fs.delete(os.path.join(path, file))
             
+        Resource.objects.all().delete()
         return Response({'success': True})
     
 class DownloadFileView(APIView):
