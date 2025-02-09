@@ -398,11 +398,19 @@ class ResourceNewView(APIView):
     #permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        
+        fs = FileSystemStorage()
+        
+        if request.FILES['attachment']:
+            path = os.path.join(settings.MEDIA_ROOT, 'resource', request.FILES['attachment'].name)
+            
+            if os.path.exists(path):
+                fs.delete(path)
+                return Response('deleted')
+        
         serializer = ResourceSerializer(data=request.data)
         if serializer.is_valid():
-            print(request.FILES['attachment'])
             serializer.save()
-            fs = FileSystemStorage()
             fs.save(request.FILES['attachment'].name, request.FILES['attachment'])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
@@ -448,10 +456,18 @@ class GetResourceView(APIView):
 
     def delete(self, request, pk):
         try:
+            fs = FileSystemStorage()
+            
             resource = Resource.objects.get(id=pk)
-            resource.delete()
+            path = os.path.join(settings.MEDIA_ROOT, 'resource', resource.attachment.name)
+            
+            if os.path.exists(path):
+                fs.delete(path)
+                resource.delete()
+                
             return Response({'data': True})
         except Resource.DoesNotExist:
+
             return Response({'error': 'Resource not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -800,9 +816,20 @@ class ListFilesView(APIView):
     def get(self, request):
 
         files = os.listdir(os.path.join(settings.MEDIA_ROOT, 'resource'))
-        file_urls = [f"{settings.MEDIA_URL}{file}" for file in files]
+        file_urls = [f"{settings.MEDIA_URL}resource/{file}" for file in files]
 
         return Response({'files': file_urls})
+    
+    def delete(self, request):
+        fs = FileSystemStorage()
+        path = os.path.join(settings.MEDIA_ROOT, 'resource')
+        
+        files = os.listdir(path)
+        
+        for file in files:
+            fs.delete(os.path.join(path, file))
+            
+        return Response({'success': True})
     
 class DownloadFileView(APIView):
     #permission_classes = [permissions.IsAuthenticated]
