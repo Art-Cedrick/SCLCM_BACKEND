@@ -946,7 +946,7 @@ class MsCouncelingView(APIView):
 
     def get(self, request):
         interviews = MS_ImpactEvaluation.objects.all()
-        serializer = RoutineInterviewSerializer(interviews, many=True)
+        serializer = MS_CounselingServiceEvaluationSerializer(interviews, many=True)
         return Response(serializer.data)
 
     
