@@ -943,6 +943,12 @@ class MsCouncelingView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        interviews = MS_CounselingServiceEvaluation.objects.all()
+        serializer = MS_CounselingServiceEvaluationSerializer(interviews, many=True)
+        return Response(serializer.data)
+
     
 class RoutineInterviewFormView(APIView):
     permission_classes = [permissions.IsAuthenticated]
