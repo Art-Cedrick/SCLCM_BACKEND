@@ -455,7 +455,7 @@ class GetResourceView(APIView):
         except Resource.DoesNotExist:
             return Response({'error': 'Resource not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        if request.FILES['attachment']:
+        if 'attachment' in request.FILES:
             fs = FileSystemStorage()
             fs.save(request.FILES['attachment'].name, request.FILES['attachment'])
             
