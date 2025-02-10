@@ -54,6 +54,7 @@ urlpatterns = [
     path('api/counselor/appointment/<int:pk>/', CounselorAppointmentView.as_view(), name='counselor-appointment-detail'),
     path('api/list-counselor/appointment/', ListCounselorAppointmentsView.as_view(), name='list-appointment-detail'),
     path('api/new-resource/', ResourceNewView.as_view(), name='resource-new'),
+    path('api/get-resource/<int:pk>/', GetResourceView.as_view(), name='get-resource'),
     path('api/record/', GetRecordView.as_view(), name='get-record'),
     path("ckeditor5/", include("django_ckeditor_5.urls")),   
     path('api/individual_record_form/', IndividualRecordView.as_view(), name='individual-record'),
