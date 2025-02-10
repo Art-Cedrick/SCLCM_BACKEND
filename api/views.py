@@ -945,8 +945,8 @@ class MsCouncelingView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        interviews = MS_CounselingServiceEvaluation.objects.all()
-        serializer = MS_CounselingServiceEvaluationSerializer(interviews, many=True)
+        interviews = MS_ImpactEvaluation.objects.all()
+        serializer = RoutineInterviewSerializer(interviews, many=True)
         return Response(serializer.data)
 
     
@@ -962,7 +962,7 @@ class RoutineInterviewFormView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        interviews = RoutineInterview.objects.all()
-        serializer = RoutineInterviewSerializer(interviews, many=True)
+        appointments = RoutineInterview.objects.all()
+        serializer = RoutineInterviewSerializer(appointments, many=True)
         return Response(serializer.data)
 
