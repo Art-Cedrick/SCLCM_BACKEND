@@ -9,7 +9,7 @@ router.register('routine_interview', RoutineInterviewViewset, basename='routine_
 router.register('careertracking', CareerTrackingViewset, basename='careertracking')
 router.register('conferenceform', ConferenceFormViewset, basename='conferenceform')
 router.register('ms_impactevaluation', MS_ImpactEvaluationViewset, basename='ms_impactevaluation')
-router.register('ms_counselingserviceevaluation', MS_CounselingServiceEvaluationViewset, basename='ms_counselingserviceevaluation')
+# router.register('ms_counselingserviceevaluation', MS_CounselingServiceEvaluationViewset, basename='ms_counselingserviceevaluation')
 router.register('guidance_class_evaluation', Guidance_Class_EvaluationViewset, basename='counseling_service_evaluation')
 router.register('kinder', KinderViewset, basename='kinder')
 router.register('grade_one', Grade_OneViewset, basename='grade_one')
@@ -58,6 +58,7 @@ urlpatterns = [
     path('api/record/', GetRecordView.as_view(), name='get-record'),
     path("ckeditor5/", include("django_ckeditor_5.urls")),   
     path('api/individual_record_form/', IndividualRecordView.as_view(), name='individual-record'),
+    path('api/ms_counselingserviceevaluation/', MsCouncelingView.as_view(), name='ms-counceling'),
 ]
 
 
