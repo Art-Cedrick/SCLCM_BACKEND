@@ -10,7 +10,7 @@ router.register('careertracking', CareerTrackingViewset, basename='careertrackin
 router.register('conferenceform', ConferenceFormViewset, basename='conferenceform')
 router.register('ms_impactevaluation', MS_ImpactEvaluationViewset, basename='ms_impactevaluation')
 # router.register('ms_counselingserviceevaluation', MS_CounselingServiceEvaluationViewset, basename='ms_counselingserviceevaluation')
-router.register('guidance_class_evaluation', Guidance_Class_EvaluationViewset, basename='counseling_service_evaluation')
+#router.register('guidance_class_evaluation', Guidance_Class_EvaluationViewset, basename='counseling_service_evaluation')
 router.register('kinder', KinderViewset, basename='kinder')
 router.register('grade_one', Grade_OneViewset, basename='grade_one')
 router.register('grade_two', Grade_TwoViewset, basename='grade_two')
@@ -60,6 +60,9 @@ urlpatterns = [
     path('api/individual_record_form/', IndividualRecordView.as_view(), name='individual-record'),
     path('api/mscounselingservice/', MsCouncelingView.as_view(), name='ms-counceling'),
     path('api/routine_interview/', RoutineInterviewFormView.as_view(), name='routine'),
+    path('api/guidance_class_evaluation/', GuidanceClassEvalView.as_view(), name='guidance'),
+    path('api/ms_impactevaluation/', MsImpactFormView.as_view(), name='impact'),
+
 ]
 
 

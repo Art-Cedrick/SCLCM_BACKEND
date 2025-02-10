@@ -951,8 +951,6 @@ class MsCouncelingView(APIView):
 
     
 class RoutineInterviewFormView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
     def post(self, request):
         request.data['date'] = datetime.strftime(datetime.now(), "%Y-%m-%d")
         serializer = RoutineInterviewSerializer(data=request.data)
@@ -966,3 +964,37 @@ class RoutineInterviewFormView(APIView):
         serializer = RoutineInterviewSerializer(appointments, many=True)
         return Response(serializer.data)
 
+class GuidanceClassEvalView(APIView):
+
+    def get(self, request):
+        interviews = Guidance_Class_Evaluation.objects.all()
+        serializer = Guidance_Class_EvaluationSerializer(interviews, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        serializer = Guidance_Class_EvaluationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MsImpactFormView(APIView):
+
+    def get(self, request):
+        interviews = MS_ImpactEvaluation.objects.all()
+        serializer = MS_ImpactEvaluationSerializer(interviews, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        serializer = MS_ImpactEvaluationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+       
+
+       
