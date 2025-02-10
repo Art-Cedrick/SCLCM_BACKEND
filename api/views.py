@@ -954,3 +954,9 @@ class RoutineInterviewFormView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        interviews = RoutineInterview.objects.all()
+        serializer = RoutineInterviewSerializer(interviews, many=True)
+        return Response(serializer.data)
+
