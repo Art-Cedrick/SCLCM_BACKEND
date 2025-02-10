@@ -73,7 +73,7 @@ class RoutineInterview(models.Model):
     sr_code = models.ForeignKey(IndividualRecordForm, on_delete=models.SET_NULL, related_name='routine_interview', null=True)
     name = models.CharField(max_length=255)
     section = models.CharField(max_length=100)
-    grade = models.CharField(max_length=100, choices=GRADE_LEVEL)
+    grade = models.CharField(max_length=100)
     date = models.DateField()
 
     family_problem = models.CharField(max_length=255, blank=True, null=True)

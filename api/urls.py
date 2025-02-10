@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 router = DefaultRouter()
-router.register('routine_interview', RoutineInterviewViewset, basename='routine_interview')
+# router.register('routine_interview', RoutineInterviewViewset, basename='routine_interview')
 router.register('careertracking', CareerTrackingViewset, basename='careertracking')
 router.register('conferenceform', ConferenceFormViewset, basename='conferenceform')
 router.register('ms_impactevaluation', MS_ImpactEvaluationViewset, basename='ms_impactevaluation')
@@ -59,6 +59,7 @@ urlpatterns = [
     path("ckeditor5/", include("django_ckeditor_5.urls")),   
     path('api/individual_record_form/', IndividualRecordView.as_view(), name='individual-record'),
     path('api/mscounselingservice/', MsCouncelingView.as_view(), name='ms-counceling'),
+    path('api/routine_interview/', RoutineInterviewFormView.as_view(), name='routine'),
 ]
 
 
