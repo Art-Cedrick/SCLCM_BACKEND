@@ -8,7 +8,7 @@ router = DefaultRouter()
 # router.register('routine_interview', RoutineInterviewViewset, basename='routine_interview')
 router.register('careertracking', CareerTrackingViewset, basename='careertracking')
 router.register('conferenceform', ConferenceFormViewset, basename='conferenceform')
-router.register('ms_impactevaluation', MS_ImpactEvaluationViewset, basename='ms_impactevaluation')
+#router.register('ms_impactevaluation', MS_ImpactEvaluationViewset, basename='ms_impactevaluation')
 # router.register('ms_counselingserviceevaluation', MS_CounselingServiceEvaluationViewset, basename='ms_counselingserviceevaluation')
 #router.register('guidance_class_evaluation', Guidance_Class_EvaluationViewset, basename='counseling_service_evaluation')
 router.register('kinder', KinderViewset, basename='kinder')
@@ -60,8 +60,11 @@ urlpatterns = [
     path('api/individual_record_form/', IndividualRecordView.as_view(), name='individual-record'),
     path('api/mscounselingservice/', MsCouncelingView.as_view(), name='ms-counceling'),
     path('api/routine_interview/', RoutineInterviewFormView.as_view(), name='routine'),
+    path('api/get_routine_interview/<int:pk>/', SingleRoutineFormView.as_view(), name='get-routine'),
     path('api/guidance_class_evaluation/', GuidanceClassEvalView.as_view(), name='guidance'),
+    path('api/get_guidance_class_evaluation/<int:pk>/', SingleGuidanceFormView.as_view(), name='get-guidance'),
     path('api/ms_impactevaluation/', MsImpactFormView.as_view(), name='impact'),
+    path('api/get_ms_impactevaluation/<int:pk>/', SingleMsImpactFormView.as_view(), name='get-impact'),
 
 ]
 

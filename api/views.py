@@ -935,7 +935,7 @@ class GetRecordView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class MsCouncelingView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         serializer = MS_CounselingServiceEvaluationSerializer(data=request.data)
@@ -994,6 +994,43 @@ class MsImpactFormView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SingleMsImpactFormView(APIView):
+    
+    def delete(self, request, pk):
+        pass
+
+    def patch(self, request):
+        pass
+
+
+class SingleGuidanceFormView(APIView):
+    
+    def delete(self, request, pk):
+        pass
+
+    def patch(self, request):
+        pass
+
+class SingleCouncelingFormView(APIView):
+    
+    def delete(self, request, pk):
+        pass
+
+    def patch(self, request):
+        pass
+
+class SingleRoutineFormView(APIView):
+    
+    def delete(self, request, pk):
+        pass
+
+    def patch(self, request):
+        pass
+
+
+
+
 
        
 
