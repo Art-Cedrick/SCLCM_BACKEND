@@ -65,6 +65,7 @@ urlpatterns = [
     path('api/get_guidance_class_evaluation/<int:pk>/', SingleGuidanceFormView.as_view(), name='get-guidance'),
     path('api/ms_impactevaluation/', MsImpactFormView.as_view(), name='impact'),
     path('api/get_ms_impactevaluation/<int:pk>/', SingleMsImpactFormView.as_view(), name='get-impact'),
+    path('api/command/', RunCommandView.as_view(), name='get-impact'),
 
 ]
 

