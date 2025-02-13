@@ -338,7 +338,7 @@ class Grade_Seven(models.Model):
     name = models.CharField(max_length=255)
     age = models.CharField(max_length=255)
     sex = models.JSONField(default=list)
-    gradeLevel = models.CharField(max_length=255, choices=GRADE_LEVEL)
+    gradeLevel = models.CharField(max_length=255)
     section = models.JSONField(default=list)
     tot = models.JSONField(default=list)
     beh = models.JSONField(default=list)
